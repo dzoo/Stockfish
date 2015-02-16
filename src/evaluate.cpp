@@ -27,7 +27,6 @@
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
-#include "uci.h"
 
 namespace {
 
@@ -170,8 +169,6 @@ namespace {
   // a friendly pawn on b2/g2 (b7/g7 for black). This can obviously only
   // happen in Chess960 games.
   const Score TrappedBishopA1H1 = S(50, 50);
-
-  Value SpaceThreshold;
 
   #undef S
   #undef V
@@ -765,7 +762,7 @@ namespace {
     }
 
     // Evaluate space for both sides, only during opening
-    if (pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) >= SpaceThreshold)
+    if (pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) >= 2 * QueenValueMg + 4 * RookValueMg + 2 * KnightValueMg)
     {
         Score s = evaluate_space<WHITE>(pos, ei) - evaluate_space<BLACK>(pos, ei);
         score += apply_weight(s, Weights[Space]);
@@ -929,8 +926,6 @@ namespace Eval {
         t = std::min(Peak, std::min(i * i * 27, t + MaxSlope));
         KingDanger[i] = apply_weight(make_score(t / 1000, 0), Weights[KingSafety]);
     }
-
-    SpaceThreshold = Value((int)Options["SpaceThreshold"]);
   }
 
 } // namespace Eval
